@@ -124,41 +124,6 @@ After compilation finishes, your binaries will be in the `dist/` directory:
 
 ---
 
-## 📤 Step-by-Step Guide to Upload to GitHub
-
-Follow these steps in your terminal (PowerShell or Bash) to push this project to your GitHub account:
-
-### 1. Create a New Repository on GitHub
-1. Go to [GitHub New Repository](https://github.com/new).
-2. Set the repository name (e.g. `marvel-desk-charm`).
-3. Set visibility to **Public** (or **Private**).
-4. Do **NOT** check "Add a README" or ".gitignore" (we have already created them).
-5. Click **Create repository**.
-
-### 2. Initialize Git & Push from PowerShell
-Open PowerShell in this project directory (`c:\Users\SquidSystem\Videos\desk-charm-app`) and run:
-
-```powershell
-# 1. Initialize local git repository
-git init
-
-# 2. Stage all files
-git add .
-
-# 3. Create initial commit
-git commit -m "feat: Marvel Desk Charm with 20 realistic character models, signature string physics, and clickables"
-
-# 4. Rename default branch to main
-git branch -M main
-
-# 5. Link to your GitHub remote repository (replace with your GitHub URL)
-git remote add origin https://github.com/<your-username>/marvel-desk-charm.git
-
-# 6. Push code to GitHub
-git push -u origin main
-```
-
----
 
 ## 🏗️ Architecture & Project Structure
 
