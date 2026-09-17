@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 160" width="100%" height="100%">
+  <defs>
+    <!-- Kamar-Taj Robe Blue -->
+    <radialGradient id="strangeBlue" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#245199"/>
+      <stop offset="45%" stop-color="#14346b"/>
+      <stop offset="85%" stop-color="#091c3d"/>
+      <stop offset="100%" stop-color="#040c1c"/>
+    </radialGradient>
+
+    <!-- Cloak of Levitation Red -->
+    <radialGradient id="strangeCloak" cx="50%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#c9182b"/>
+      <stop offset="50%" stop-color="#8a0817"/>
+      <stop offset="100%" stop-color="#420008"/>
+    </radialGradient>
+
+    <!-- Mystic Tao Magic Gold -->
+    <radialGradient id="taoMagic" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="35%" stop-color="#ffe066"/>
+      <stop offset="70%" stop-color="#ff9900"/>
+      <stop offset="100%" stop-color="#cc5500"/>
+    </radialGradient>
+
+    <!-- Realistic Skin -->
+    <radialGradient id="strangeSkin" cx="48%" cy="36%" r="62%">
+      <stop offset="0%" stop-color="#ffe3cb"/>
+      <stop offset="45%" stop-color="#f2c199"/>
+      <stop offset="80%" stop-color="#cb8f65"/>
+      <stop offset="100%" stop-color="#804e2d"/>
+    </radialGradient>
+
+    <filter id="mysticMandalaGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="strange3DShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#strange3DShadow)">
+    <!-- 1. RAISED MYSTIC ARM & SPELLCASTING MUDRA HAND AT (cx=65, cy=16) -->
+    <!-- Sorcerer Robe Sleeve reaching from shoulder (x=88, y=56) up to hand (x=65, y=22) -->
+    <path d="M 88 56 L 76 30 L 66 22 L 58 26 L 68 44 L 80 62 Z" fill="url(#strangeBlue)" stroke="#091c3d" stroke-width="1.3"/>
+    <!-- Yellow Magical Wrist Wraps -->
+    <rect x="58" y="20" width="14" height="4.5" rx="1.5" transform="rotate(-25 65 22)" fill="#ffb703" stroke="#996000" stroke-width="0.8"/>
+
+    <!-- Slender Sorcerer Mudra Hand at cx=65, cy=22 -->
+    <ellipse cx="65" cy="22" rx="9" ry="6.5" fill="url(#strangeSkin)" stroke="#613b20" stroke-width="1.1"/>
+    <!-- Mudra Fingers gesturing up into the mandala -->
+    <rect x="58" y="16" width="14" height="3.5" rx="1.7" fill="#f2c199"/>
+
+    <!-- Golden Tao Mandala Rune Circle (Direct Connection at cx=65, cy=16) -->
+    <circle cx="65" cy="16" r="9" fill="none" stroke="url(#taoMagic)" stroke-width="1.6" filter="url(#mysticMandalaGlow)"/>
+    <polygon points="65,8 73,20 57,20" fill="none" stroke="#ffaa00" stroke-width="1" filter="url(#mysticMandalaGlow)"/>
+    <polygon points="65,24 73,12 57,12" fill="none" stroke="#ffaa00" stroke-width="1" filter="url(#mysticMandalaGlow)"/>
+    <circle cx="65" cy="16" r="2.8" fill="#ffffff"/>
+
+    <!-- 2. CLOAK OF LEVITATION HIGH POPPED COLLAR -->
+    <path d="M 26 54 L 38 98 L 48 106 L 38 74 Z" fill="url(#strangeCloak)" stroke="#2b020a" stroke-width="1.2"/>
+    <path d="M 88 54 L 80 98 L 72 106 L 78 74 Z" fill="url(#strangeCloak)" stroke="#2b020a" stroke-width="1.2"/>
+
+    <!-- 3. HEAD & HAIR (Tilted looking up at glowing Tao mandala) -->
+    <path d="M 34 48 C 32 32 46 26 58 26 C 70 26 80 32 80 48 C 82 62 80 76 76 84 C 74 72 72 58 70 50 C 62 40 48 40 40 50 C 38 58 36 72 34 84 Z" fill="#181b21"/>
+    <!-- Silver Temples -->
+    <path d="M 36 48 C 38 58 40 70 42 74 C 40 64 38 52 36 46 Z" fill="#dce4f0"/>
+    <path d="M 76 48 C 74 58 72 70 70 74 C 72 64 74 52 76 46 Z" fill="#dce4f0"/>
+
+    <!-- Doctor Strange Face -->
+    <path d="M 38 50 C 38 36 48 32 58 32 C 68 32 76 36 76 50 C 77 66 75 82 71 90 C 67 98 60 100 58 100 C 55 100 48 98 44 90 C 40 82 38 66 38 50 Z" fill="url(#strangeSkin)" stroke="#613b20" stroke-width="1.2"/>
+
+    <!-- Eyebrows & Eyes (Looking up toward mandala) -->
+    <path d="M 42 56 Q 48 52 54 55" stroke="#2b1406" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M 72 56 Q 66 52 60 55" stroke="#2b1406" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <ellipse cx="48" cy="62" rx="3.8" ry="2.6" fill="#ffffff"/>
+    <circle cx="48" cy="62" r="1.6" fill="#3a5a40"/>
+    <circle cx="48" cy="62" r="0.7" fill="#111"/>
+    <ellipse cx="66" cy="62" rx="3.8" ry="2.6" fill="#ffffff"/>
+    <circle cx="66" cy="62" r="1.6" fill="#3a5a40"/>
+    <circle cx="66" cy="62" r="0.7" fill="#111"/>
+
+    <!-- Goatee Beard -->
+    <path d="M 54 78 L 62 78 L 58 84 Z" fill="#181b21"/>
+    <path d="M 55 87 L 61 87 L 58 96 Z" fill="#181b21"/>
+    <line x1="52" y1="81" x2="64" y2="81" stroke="#3d1e0d" stroke-width="1.8" stroke-linecap="round"/>
+
+    <!-- 4. KAMAR-TAJ ROBES & EYE OF AGAMOTTO -->
+    <path d="M 28 106 C 20 114 16 130 14 148 C 34 152 82 152 102 148 C 100 130 96 114 88 106 C 78 116 68 120 58 120 C 48 120 38 116 28 106 Z" fill="url(#strangeBlue)" stroke="#091c3d" stroke-width="1.8"/>
+    <!-- Overlapping Tunic Bands -->
+    <path d="M 38 108 L 58 132 L 78 108" stroke="#ff9900" stroke-width="1.5" fill="none" opacity="0.8"/>
+
+    <!-- Eye of Agamotto Amulet -->
+    <ellipse cx="58" cy="120" rx="9" ry="6.5" fill="#4d3200" stroke="#ffd700" stroke-width="1.5"/>
+    <ellipse cx="58" cy="120" rx="5" ry="3.5" fill="#52b788"/>
+    <circle cx="58" cy="120" r="1.5" fill="#ffffff"/>
+  </g>
+</svg>

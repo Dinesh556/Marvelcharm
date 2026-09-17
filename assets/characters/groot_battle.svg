@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 160" width="100%" height="100%">
+  <defs>
+    <!-- Heavy Hardened Bark Armor -->
+    <radialGradient id="hardenedBark" cx="44%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#6e492b"/>
+      <stop offset="45%" stop-color="#4a2e18"/>
+      <stop offset="85%" stop-color="#2c1a0c"/>
+      <stop offset="100%" stop-color="#140b04"/>
+    </radialGradient>
+
+    <!-- Bioluminescent Emerald Moss -->
+    <radialGradient id="emeraldMoss" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#b8ff70"/>
+      <stop offset="50%" stop-color="#55dd33"/>
+      <stop offset="100%" stop-color="#1c660a"/>
+    </radialGradient>
+
+    <!-- Warm Amber Resin Eyes -->
+    <radialGradient id="battleGrootEye" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#ffbf00"/>
+      <stop offset="70%" stop-color="#b36200"/>
+      <stop offset="100%" stop-color="#2e1500"/>
+    </radialGradient>
+
+    <filter id="mossGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="battleGroot3DShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#battleGroot3DShadow)">
+    <!-- 1. RAISED HARDENED IRONWOOD ARM & HAND AT (cx=65, cy=16) -->
+    <!-- Arm reaching up from shoulder (x=88, y=56) to hand (x=65, y=22) -->
+    <path d="M 88 56 L 76 30 L 66 22 L 58 26 L 68 44 L 80 62 Z" fill="url(#hardenedBark)" stroke="#140b04" stroke-width="1.3"/>
+    <!-- Ironwood Thorn Spur on Forearm -->
+    <polygon points="76,34 86,28 78,42" fill="url(#hardenedBark)" stroke="#140b04" stroke-width="0.8"/>
+
+    <!-- Hardened Branch Hand clutching vine at cx=65, cy=22 -->
+    <ellipse cx="65" cy="22" rx="9" ry="6.5" fill="url(#hardenedBark)" stroke="#140b04" stroke-width="1.1"/>
+    <!-- Curled Wooden Spiked Fingers wrapped around vine -->
+    <rect x="58" y="16" width="14" height="4" rx="2" fill="#593b1d" stroke="#140b04" stroke-width="0.7"/>
+
+    <!-- Glowing Emerald Moss & Battle Shoots at cx=65, cy=16 -->
+    <circle cx="65" cy="16" r="5" fill="url(#emeraldMoss)" filter="url(#mossGlow)"/>
+    <path d="M 65 16 C 60 8 55 9 58 15 Z" fill="#55dd33"/>
+    <path d="M 65 16 C 70 8 75 9 72 15 Z" fill="#55dd33"/>
+    <circle cx="65" cy="16" r="2.2" fill="#ffffff"/>
+
+    <!-- 2. LEFT ARMORED SHOULDER WITH THORN SPUR -->
+    <path d="M 28 80 C 22 84 18 96 16 112 C 22 108 26 98 28 88 Z" fill="url(#hardenedBark)" stroke="#140b04" stroke-width="1"/>
+    <polygon points="24,86 14,80 20,96" fill="url(#hardenedBark)" stroke="#140b04" stroke-width="0.8"/>
+
+    <!-- 3. HEAVY SPIKED BARK CROWN & HEAD (Looking up) -->
+    <!-- Jagged Battle Crown -->
+    <path d="M 32 52 L 26 26 L 36 36 L 42 16 L 50 30 L 58 14 L 66 30 L 76 16 L 82 36 L 92 26 L 86 52 C 88 70 86 82 80 92 C 74 100 66 104 58 104 C 50 104 42 100 36 92 C 30 82 30 70 32 52 Z" fill="url(#hardenedBark)" stroke="#170c04" stroke-width="1.8"/>
+
+    <!-- Glowing Moss Inlays in Crown -->
+    <ellipse cx="58" cy="22" rx="3.5" ry="2" fill="url(#emeraldMoss)" filter="url(#mossGlow)"/>
+    <ellipse cx="44" cy="26" rx="2.5" ry="1.5" fill="url(#emeraldMoss)" filter="url(#mossGlow)"/>
+    <ellipse cx="72" cy="26" rx="2.5" ry="1.5" fill="url(#emeraldMoss)" filter="url(#mossGlow)"/>
+
+    <!-- Woodgrain Lines -->
+    <g stroke="#241405" stroke-width="1.3" fill="none" stroke-linecap="round">
+      <path d="M 42 44 Q 50 38 58 42"/>
+      <path d="M 74 44 Q 66 38 58 42"/>
+      <line x1="58" y1="46" x2="58" y2="64"/>
+    </g>
+
+    <!-- Intense Amber Battle Eyes (Looking up) -->
+    <circle cx="47" cy="64" r="5" fill="#140b04"/>
+    <circle cx="47" cy="63" r="3.8" fill="url(#battleGrootEye)"/>
+    <circle cx="47" cy="62" r="1.8" fill="#140b04"/>
+    <circle cx="46" cy="61" r="1.1" fill="#ffffff"/>
+
+    <circle cx="69" cy="64" r="5" fill="#140b04"/>
+    <circle cx="69" cy="63" r="3.8" fill="url(#battleGrootEye)"/>
+    <circle cx="69" cy="62" r="1.8" fill="#140b04"/>
+    <circle cx="68" cy="61" r="1.1" fill="#ffffff"/>
+
+    <!-- Determined Battle Mouth -->
+    <line x1="50" y1="84" x2="66" y2="84" stroke="#170c04" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- 4. CHEST & HARDENED BARK PLATES -->
+    <path d="M 28 110 C 16 116 10 132 8 150 C 28 154 88 154 108 150 C 106 132 100 116 88 110 C 78 120 68 124 58 124 C 48 124 38 120 28 110 Z" fill="url(#hardenedBark)" stroke="#170c04" stroke-width="2"/>
+    <!-- Moss Veins on Chest -->
+    <path d="M 46 126 Q 58 136 70 126" stroke="url(#emeraldMoss)" stroke-width="1.8" fill="none" filter="url(#mossGlow)"/>
+  </g>
+</svg>

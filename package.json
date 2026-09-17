@@ -1,0 +1,37 @@
+{
+  "name": "desk-charm",
+  "version": "1.0.0",
+  "description": "A dangling desktop charm that hangs from the top of your screen and reacts to your mouse.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node tests/string-styles.test.js",
+    "dist": "electron-builder"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.deskcharm.app",
+    "productName": "Marvel Desk Charm",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

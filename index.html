@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Marvel Desk Charm</title>
+<style>
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  canvas {
+    display: block;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Interactive Comic Speech Bubble on Left-Click */
+  #speech-bubble {
+    position: absolute;
+    z-index: 15;
+    background: rgba(14, 16, 24, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 51, 68, 0.7);
+    border-radius: 14px;
+    padding: 8px 12px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7), 0 0 16px rgba(255, 51, 68, 0.35);
+    max-width: 230px;
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+    transition: opacity 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #speech-bubble.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  /* Speech bubble downward pointer tip */
+  #speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid rgba(14, 16, 24, 0.94);
+  }
+  .bubble-hero-tag {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #ff3344;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .bubble-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.35;
+  }
+
+  /* Right-Click Hero Switcher & Settings Dock */
+  #hero-dock {
+    position: absolute;
+    z-index: 20;
+    background: rgba(16, 18, 27, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    padding: 10px 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(226, 54, 54, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.95);
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #hero-dock.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .dock-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 6px;
+  }
+  .dock-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #ff3344;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dock-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dock-icon-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #ccc;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .dock-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  .dock-icon-btn.active {
+    background: #e23636;
+    color: #fff;
+  }
+
+  .hero-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 0;
+    max-width: 440px;
+    scrollbar-width: none;
+  }
+  .hero-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 10px;
+    transition: transform 0.15s ease, background 0.15s ease;
+    min-width: 52px;
+  }
+  .hero-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+  .hero-item.active {
+    background: rgba(226, 54, 54, 0.25);
+    border: 1px solid rgba(255, 60, 60, 0.5);
+  }
+
+  .hero-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #252836;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.15s;
+  }
+  .hero-item.active .hero-avatar {
+    border-color: #ff3344;
+    box-shadow: 0 0 10px rgba(255, 51, 68, 0.6);
+  }
+  .hero-avatar img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+  }
+  .hero-avatar span {
+    font-size: 20px;
+  }
+
+  .hero-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #ff3344;
+    color: #fff;
+    font-size: 7px;
+    font-weight: 800;
+    padding: 1px 3px;
+    border-radius: 4px;
+    line-height: 1;
+    border: 1px solid #111;
+  }
+
+  .hero-name {
+    font-size: 9px;
+    color: #ccc;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 54px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hero-item.active .hero-name {
+    color: #ff5566;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<!-- Interactive Speech Bubble (Shown on Left-Click) -->
+<div id="speech-bubble">
+  <div class="bubble-hero-tag" id="bubble-hero-tag">⚡ Spider-Man</div>
+  <div class="bubble-text" id="bubble-text">With great power comes great responsibility!</div>
+</div>
+
+<!-- Right-Click Hero Switcher & Settings Dock -->
+<div id="hero-dock">
+  <div class="dock-header">
+    <div class="dock-title">
+      <span>⚡</span> Switch Marvel Hero
+    </div>
+    <div class="dock-controls">
+      <button class="dock-icon-btn" id="skin-btn" title="Toggle Classic / Alternate Costume Model">🎭 Alt Skin</button>
+      <button class="dock-icon-btn" id="sound-btn" title="Toggle Sound FX">🔊 SFX</button>
+      <button class="dock-icon-btn" id="pos-btn" title="Cycle Screen Position">📍 Pos</button>
+      <button class="dock-icon-btn" id="close-dock-btn" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="hero-list" id="hero-list-container">
+    <!-- Populated dynamically via JS -->
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   MARVEL DESK CHARM — Interactive Clickables & Flexible Rope
+   ========================================================= */
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const speechBubble = document.getElementById('speech-bubble');
+const bubbleHeroTag = document.getElementById('bubble-hero-tag');
+const bubbleText = document.getElementById('bubble-text');
+const heroDock = document.getElementById('hero-dock');
+const heroListContainer = document.getElementById('hero-list-container');
+const soundBtn = document.getElementById('sound-btn');
+const skinBtn = document.getElementById('skin-btn');
+const posBtn = document.getElementById('pos-btn');
+const closeDockBtn = document.getElementById('close-dock-btn');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => {
+  resize();
+  setAnchor();
+});
+
+// ---------- Multi-Segment Flexible Verlet Rope Physics ----------
+const NUM_POINTS = 14;
+const BASE_STRING_LENGTH = 150;
+let segmentLength = BASE_STRING_LENGTH / (NUM_POINTS - 1);
+
+let anchorRatio = 0.85; // 0.85 (right), 0.5 (center), 0.15 (left)
+const ANCHOR_Y = -6;
+let anchor = { x: 0, y: ANCHOR_Y };
+
+let ropePoints = [];
+
+function initRope() {
+  ropePoints = [];
+  setAnchor();
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const y = anchor.y + i * segmentLength;
+    ropePoints.push({
+      x: anchor.x,
+      y: y,
+      oldX: anchor.x,
+      oldY: y,
+    });
+  }
+}
+
+function setAnchor() {
+  anchor.x = canvas.width * anchorRatio;
+  anchor.y = ANCHOR_Y;
+  if (ropePoints.length > 0) {
+    const dx = anchor.x - ropePoints[0].x;
+    const dy = anchor.y - ropePoints[0].y;
+    ropePoints.forEach(p => {
+      p.x += dx;
+      p.y += dy;
+      p.oldX += dx;
+      p.oldY += dy;
+    });
+  }
+}
+initRope();
+
+// ---------- Character State & Thematic Config ----------
+let currentCharm = {
+  id: 'spiderman',
+  name: 'Spider-Man',
+  tagline: 'Web String',
+  category: 'marvel',
+  type: 'image',
+  value: 'assets/characters/spiderman.svg',
+  stringStyle: 'web',
+  sound: 'web',
+  width: 78,
+  activeSkin: 'default',
+};
+let charmImg = null;
+let imgAspect = 1;
+let soundEnabled = true;
+let allCharmsData = { marvel: [], custom: [] };
+let isDockOpen = false;
+
+// Quotes library for each character (Classic & Alternate skins)
+const HERO_QUOTES = {
+  spiderman: [
+    "With great power comes great responsibility.",
+    "Your friendly neighborhood Spider-Man! 🕸️",
+    "Thwip! Just hanging around your desktop! 🕷️",
+    "My Spider-Sense is tingling!"
+  ],
+  spiderman_alt: [
+    "The power of the Symbiote is incredible! 🕷️🖤",
+    "We are Venom... wait, no, I'm still Spider-Man!",
+    "Nothing can stop me in this alien suit!",
+    "Feels like a second skin... an aggressive one."
+  ],
+  ironman: [
+    "I am Iron Man. ⚡",
+    "Jarvis, sometimes you gotta run before you can walk.",
+    "Genius, billionaire, playboy, philanthropist. 🕶️",
+    "Power at 400% capacity!"
+  ],
+  ironman_alt: [
+    "Stealth mode active. Radar cross-section zero. 🕶️",
+    "War Machine would be jealous of these spec-ops guns.",
+    "Low-observable carbon weave engaged.",
+    "Jarvis, switch unibeam to crimson tactical pulse."
+  ],
+  thor: [
+    "Bring me Thanos! ⚡",
+    "For Asgard! 🔨",
+    "I choose to run towards my problems, not away from them.",
+    "This drink, I like it! Another! 🍺"
+  ],
+  thor_alt: [
+    "I am the God of Thunder! Not the God of Hammers! ⚡",
+    "Sparkles? Let me show you what lightning can do!",
+    "For Asgard, and for all the realms!",
+    "The storm answers to ME!"
+  ],
+  doctor_strange: [
+    "Dormammu, I've come to bargain! ⏳",
+    "An eldritch spell, but quite unbreakable. ✨",
+    "We're in the endgame now.",
+    "There was no other way."
+  ],
+  doctor_strange_alt: [
+    "I lost my heart... but gained infinite power. 👁️",
+    "The Darkhold taught me spells older than time.",
+    "You cannot alter absolute points in time.",
+    "I will bargain with reality itself!"
+  ],
+  captain_america: [
+    "I can do this all day. 🛡️",
+    "Avengers, assemble!",
+    "Whatever it takes. 🇺🇸",
+    "Language!"
+  ],
+  captain_america_alt: [
+    "Before we get started, does anyone want to get out? 🛡️",
+    "Stealth strike team, move in on my mark.",
+    "The price of freedom is high. Always has been.",
+    "Whatever it takes."
+  ],
+  deadpool: [
+    "Maximum effort! ⚔️",
+    "Did somebody say chimichangas?! 🌮",
+    "Wait... did I leave the stove on? ❤️",
+    "Fourth-wall break inside a fourth-wall break!"
+  ],
+  deadpool_alt: [
+    "Ooh, slate grey is my tactical slaughter color! ⚔️",
+    "X-Force! Wait, who's copyrighting this costume?",
+    "Maximum effort, now with 200% more spec-ops edginess!",
+    "Chimichangas taste even better in grey!"
+  ],
+  scarlet_witch: [
+    "You will. 🔮",
+    "I can't control their fear, only my own.",
+    "Reality can be whatever I want. 🔴",
+    "Everything is under control."
+  ],
+  scarlet_witch_alt: [
+    "I'm not a monster... I'm a mother. 🔮",
+    "You break the rules and become a hero. I do it and become the enemy.",
+    "Do you know what the Darkhold whispers?",
+    "Run."
+  ],
+  black_panther: [
+    "Wakanda Forever! 🐾",
+    "As you can see, I am not dead.",
+    "In my culture, death is not the end. 💜",
+    "The Black Panther lives!"
+  ],
+  black_panther_alt: [
+    "I claimed the Golden Jaguar habit. 🐾",
+    "The sun will never set on our empire.",
+    "Bury me in the ocean with my ancestors...",
+    "Gold suits a conqueror."
+  ],
+  hulk: [
+    "HULK SMASH! 💥",
+    "Puny god.",
+    "That's my secret, Cap... I'm always angry. 🟢",
+    "Hulk is strongest one there is!"
+  ],
+  hulk_alt: [
+    "I'M NOT BRUCE BANNER! I'M GENERAL ROSS! 🔥",
+    "RED HULK WILL BURN YOU TO ASHES!",
+    "The hotter I get, the stronger I hit!",
+    "NO ONE CAN STOP A NUCLEAR SMASH!"
+  ],
+  groot: [
+    "I am Groot! 🌱",
+    "I AM Groot! 🍃",
+    "We are Groot. 🌸",
+    "I am Grooooot! 🌲"
+  ],
+  groot_alt: [
+    "I AM GROOT! (Battle Crest Alpha Activated!) 🛡️🌲",
+    "I AM GROOOT! (Hardened ironwood spikes ready!)",
+    "WE ARE GROOT! 🌸",
+    "I... AM... GROOOOOT! 🍃"
+  ],
+  duck: ["Quack quack! 🦆", "Rubber duck debugging active!"],
+  ghost: ["Booo! 👻", "Spooky desktop vibes!"],
+  dice: ["Feeling lucky today! 🎲", "Natural 20!"],
+  alien: ["Take me to your leader! 👽", "Greetings Earthling!"]
+};
+
+const HERO_THEMES = {
+  spiderman: { color: "#ff3344", glow: "rgba(255, 51, 68, 0.7)" },
+  spiderman_alt: { color: "#ffffff", glow: "rgba(255, 255, 255, 0.85)" },
+  ironman: { color: "#ffaa00", glow: "rgba(0, 220, 255, 0.7)" },
+  ironman_alt: { color: "#ff2244", glow: "rgba(255, 34, 68, 0.85)" },
+  thor: { color: "#55ccff", glow: "rgba(85, 204, 255, 0.7)" },
+  thor_alt: { color: "#70ddff", glow: "rgba(112, 221, 255, 0.9)" },
+  doctor_strange: { color: "#ff9900", glow: "rgba(255, 153, 0, 0.7)" },
+  doctor_strange_alt: { color: "#ffb703", glow: "rgba(171, 85, 242, 0.9)" },
+  captain_america: { color: "#3388ff", glow: "rgba(51, 136, 255, 0.7)" },
+  captain_america_alt: { color: "#bcc7d4", glow: "rgba(188, 199, 212, 0.8)" },
+  deadpool: { color: "#ff2244", glow: "rgba(255, 34, 68, 0.7)" },
+  deadpool_alt: { color: "#ff2244", glow: "rgba(255, 34, 68, 0.85)" },
+  scarlet_witch: { color: "#ff0044", glow: "rgba(255, 0, 68, 0.7)" },
+  scarlet_witch_alt: { color: "#ff1744", glow: "rgba(255, 23, 68, 0.9)" },
+  black_panther: { color: "#ba43ff", glow: "rgba(186, 67, 255, 0.7)" },
+  black_panther_alt: { color: "#ffd700", glow: "rgba(255, 215, 0, 0.9)" },
+  hulk: { color: "#44dd22", glow: "rgba(68, 221, 34, 0.7)" },
+  hulk_alt: { color: "#ff3b4b", glow: "rgba(255, 59, 75, 0.9)" },
+  groot: { color: "#78db24", glow: "rgba(120, 219, 36, 0.7)" },
+  groot_alt: { color: "#55dd33", glow: "rgba(85, 221, 51, 0.9)" },
+};
+
+let heroQuoteIndices = {};
+let speechBubbleTimer = null;
+let clickParticles = [];
+let screenShake = 0;
+
+// Drag state
+let dragging = false;
+let dragOffset = { x: 0, y: 0 };
+let dragStartPos = { x: 0, y: 0 };
+let hasDragged = false;
+
+let mouse = { x: -9999, y: -9999 };
+let prevMouse = { x: -9999, y: -9999 };
+let mouseVel = { x: 0, y: 0 };
+let mouseOverCharm = false;
+let mouseOverUI = false;
+
+const GRAVITY = 0.48;
+const AIR_DAMPING = 0.985;
+
+function normalizePath(val) {
+  if (!val) return '';
+  if (val.startsWith('file://') || val.startsWith('data:') || val.startsWith('http')) return val;
+  let p = val.replace(/\\/g, '/');
+  if (!p.startsWith('/')) p = '/' + p;
+  return 'file://' + p;
+}
+
+function applyCharm(charm) {
+  if (!charm) return;
+  currentCharm = charm;
+  charmImg = null;
+  imgAspect = 160 / 130;
+
+  if (charm.type === 'image') {
+    const img = new Image();
+    img.onload = () => {
+      charmImg = img;
+      imgAspect = img.naturalHeight / (img.naturalWidth || 1) || (160 / 130);
+    };
+    img.onerror = () => {
+      console.warn('Could not load charm image:', charm.value);
+    };
+    img.src = normalizePath(charm.value) + '?v=' + Date.now();
+  }
+
+  // Update skin toggle button in dock
+  if (skinBtn) {
+    if (charm.altValue) {
+      skinBtn.style.display = 'inline-block';
+      skinBtn.textContent = charm.activeSkin === 'alt' ? '🎭 Classic' : '🎭 Alt Skin';
+      skinBtn.classList.toggle('active', charm.activeSkin === 'alt');
+      skinBtn.title = charm.activeSkin === 'alt'
+        ? `Switch to Classic ${charm.originalName || charm.name}`
+        : `Switch to Alternate Model (${charm.altName || 'Alt Skin'})`;
+    } else {
+      skinBtn.style.display = 'none';
+    }
+  }
+
+  // Update theme colors on speech bubble
+  const themeKey = (charm.activeSkin === 'alt' && HERO_THEMES[charm.id + '_alt']) ? (charm.id + '_alt') : charm.id;
+  const theme = HERO_THEMES[themeKey] || { color: "#ff3344", glow: "rgba(255, 51, 68, 0.7)" };
+  speechBubble.style.borderColor = theme.color;
+  speechBubble.style.boxShadow = `0 10px 28px rgba(0, 0, 0, 0.7), 0 0 16px ${theme.glow}`;
+  bubbleHeroTag.style.color = theme.color;
+
+  playSound(charm.sound || charm.stringStyle);
+  hideSpeechBubble();
+  renderDockHeroes();
+}
+
+function getCharmPos() {
+  if (!ropePoints.length) return { x: anchor.x, y: anchor.y + BASE_STRING_LENGTH };
+  const last = ropePoints[ropePoints.length - 1];
+  return { x: last.x, y: last.y };
+}
+
+// ---------- Interactive Speech Bubble & Click Effects ----------
+function showHeroQuote() {
+  const quoteKey = (currentCharm.activeSkin === 'alt' && HERO_QUOTES[currentCharm.id + '_alt']) ? (currentCharm.id + '_alt') : currentCharm.id;
+  const quotes = HERO_QUOTES[quoteKey] || HERO_QUOTES[currentCharm.id] || [`Hello from ${currentCharm.name}!`];
+  if (!heroQuoteIndices[quoteKey]) heroQuoteIndices[quoteKey] = 0;
+  const quote = quotes[heroQuoteIndices[quoteKey] % quotes.length];
+  heroQuoteIndices[quoteKey]++;
+
+  bubbleHeroTag.textContent = `★ ${currentCharm.name}`;
+  bubbleText.textContent = quote;
+
+  const pos = getCharmPos();
+  const width = currentCharm.width || 78;
+  const h = currentCharm.type === 'image' ? width * (imgAspect || 1.2) : width;
+
+  // Position speech bubble centered near character
+  let bx = pos.x - 110;
+  if (bx < 15) bx = 15;
+  if (bx + 230 > window.innerWidth) bx = window.innerWidth - 245;
+
+  let by;
+  if (currentCharm.id === 'spiderman') {
+    // Spider-Man hangs upside down: his head is at the bottom!
+    by = pos.y + h + 15;
+    if (by + 75 > window.innerHeight) by = pos.y - 80;
+  } else {
+    by = pos.y - 80;
+    if (by < 10) by = pos.y + h + 15;
+  }
+
+  speechBubble.style.left = `${bx}px`;
+  speechBubble.style.top = `${by}px`;
+  speechBubble.classList.add('visible');
+
+  clearTimeout(speechBubbleTimer);
+  speechBubbleTimer = setTimeout(() => {
+    hideSpeechBubble();
+  }, 3400);
+}
+
+function hideSpeechBubble() {
+  speechBubble.classList.remove('visible');
+  clearTimeout(speechBubbleTimer);
+}
+
+speechBubble.addEventListener('click', (e) => {
+  e.stopPropagation();
+  showHeroQuote();
+});
+
+// Spawn thematic interactive click particles
+function spawnClickBurst(x, y, heroId) {
+  const count = 18;
+  const themeKey = (currentCharm.activeSkin === 'alt' && HERO_THEMES[heroId + '_alt']) ? (heroId + '_alt') : heroId;
+  const theme = HERO_THEMES[themeKey] || { color: "#ff3344" };
+
+  if (heroId === 'hulk') screenShake = 7;
+
+  for (let i = 0; i < count; i++) {
+    const ang = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+    const speed = 2.5 + Math.random() * 4.5;
+    clickParticles.push({
+      x: x,
+      y: y,
+      vx: Math.cos(ang) * speed,
+      vy: Math.sin(ang) * speed - 1.2,
+      color: theme.color,
+      size: 2.5 + Math.random() * 3,
+      alpha: 1,
+      life: 0,
+      maxLife: 30 + Math.floor(Math.random() * 20),
+      heroId: heroId,
+      symbol: heroId === 'deadpool' ? (Math.random() > 0.5 ? '❤️' : '💥') : null
+    });
+  }
+
+  // Slight upward spring impulse on charm when clicked
+  const lastIdx = NUM_POINTS - 1;
+  ropePoints[lastIdx].y -= 8;
+}
+
+// ---------- Procedural Web Audio Engine ----------
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSound(type) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    switch (type) {
+      case 'web': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.16);
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2200, now);
+        filter.Q.setValueAtTime(4, now);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.16);
+        break;
+      }
+      case 'repulsor':
+      case 'repulsor_beam': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.22);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+        break;
+      }
+      case 'lightning':
+      case 'lightning_arc': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.setValueAtTime(120, now + 0.05);
+        osc.frequency.setValueAtTime(950, now + 0.09);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+        break;
+      }
+      case 'mystic':
+      case 'mystic_mandala': {
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        osc2.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.38);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.38);
+        osc2.stop(now + 0.38);
+        break;
+      }
+      case 'shield':
+      case 'tactical_cable': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+        break;
+      }
+      case 'comic':
+      case 'comic_doodle': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.linearRampToValueAtTime(660, now + 0.12);
+        osc.frequency.linearRampToValueAtTime(330, now + 0.22);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+        break;
+      }
+      case 'chaos':
+      case 'chaos_hex': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.28);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.28);
+        break;
+      }
+      case 'kinetic':
+      case 'kinetic_weave': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.25);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+        break;
+      }
+      case 'smash':
+      case 'gamma_chain': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(110, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.28);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+        break;
+      }
+      case 'vine':
+      case 'living_vine': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.setValueAtTime(560, now + 0.08);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+        break;
+      }
+      default: {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+        break;
+      }
+    }
+  } catch (e) {
+    console.warn('Audio error:', e);
+  }
+}
+
+// ---------- Flexible Verlet Physics Loop ----------
+function updatePhysics() {
+  const lastIdx = NUM_POINTS - 1;
+
+  for (let i = 1; i < NUM_POINTS; i++) {
+    const p = ropePoints[i];
+    if (dragging && i === lastIdx) continue;
+
+    const vx = (p.x - p.oldX) * AIR_DAMPING;
+    const vy = (p.y - p.oldY) * AIR_DAMPING;
+    p.oldX = p.x;
+    p.oldY = p.y;
+    p.x += vx;
+    p.y += vy + GRAVITY;
+  }
+
+  if (dragging) {
+    ropePoints[lastIdx].x = mouse.x - dragOffset.x;
+    ropePoints[lastIdx].y = mouse.y - dragOffset.y;
+  }
+
+  // Relaxation iterations
+  const iterations = 8;
+  for (let iter = 0; iter < iterations; iter++) {
+    ropePoints[0].x = anchor.x;
+    ropePoints[0].y = anchor.y;
+
+    if (dragging) {
+      ropePoints[lastIdx].x = mouse.x - dragOffset.x;
+      ropePoints[lastIdx].y = mouse.y - dragOffset.y;
+    }
+
+    for (let i = 0; i < lastIdx; i++) {
+      const p1 = ropePoints[i];
+      const p2 = ropePoints[i + 1];
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist > 0.0001) {
+        const diff = (dist - segmentLength) / dist;
+        const elasticity = 0.88;
+
+        let w1 = 0.5;
+        let w2 = 0.5;
+        if (i === 0) {
+          w1 = 0;
+          w2 = 1.0;
+        } else if (i + 1 === lastIdx && dragging) {
+          w1 = 1.0;
+          w2 = 0;
+        }
+
+        p1.x += dx * diff * w1 * elasticity;
+        p1.y += dy * diff * w1 * elasticity;
+        p2.x -= dx * diff * w2 * elasticity;
+        p2.y -= dy * diff * w2 * elasticity;
+      }
+    }
+  }
+
+  // Screen shake decay (for Hulk smash)
+  if (screenShake > 0.1) screenShake *= 0.85;
+  else screenShake = 0;
+}
+
+// ---------- Sync Hit Bounds to Electron Main Process ----------
+function syncHitBounds() {
+  if (!window.deskCharm || !window.deskCharm.updateHitBounds) return;
+
+  const pos = getCharmPos();
+  const areas = [];
+
+  if (currentCharm.type === 'image') {
+    const w = currentCharm.width || 78;
+    const h = w * (imgAspect || 1.23);
+    // 1. Hand anchor grip area
+    areas.push({ type: 'circle', x: pos.x, y: pos.y, radius: 38 });
+    // 2. Main body area
+    areas.push({ type: 'circle', x: pos.x, y: pos.y + h * 0.44, radius: Math.max(w * 0.65, 48) });
+  } else {
+    const radius = Math.max(currentCharm.width || 78, 65) * 0.85;
+    areas.push({ type: 'circle', x: pos.x, y: pos.y, radius: radius });
+  }
+
+  // String segments so clicking/grabbing near string is responsive
+  for (let i = 1; i < ropePoints.length - 1; i += 2) {
+    areas.push({ type: 'circle', x: ropePoints[i].x, y: ropePoints[i].y, radius: 24 });
+  }
+
+  // Speech bubble if visible
+  if (speechBubble.classList.contains('visible')) {
+    const r = speechBubble.getBoundingClientRect();
+    areas.push({ type: 'rect', x: r.left - 6, y: r.top - 6, width: r.width + 12, height: r.height + 12 });
+  }
+
+  // Hero switcher dock if open
+  if (isDockOpen) {
+    const r = heroDock.getBoundingClientRect();
+    areas.push({ type: 'rect', x: r.left - 6, y: r.top - 6, width: r.width + 12, height: r.height + 12 });
+  }
+
+  window.deskCharm.updateHitBounds({
+    areas: areas,
+    isDragging: dragging,
+    isDockOpen: isDockOpen
+  });
+}
+
+// Helper: check if point (px, py) is hovering/clicking anywhere on the charm
+function isPointOverCharm(px, py) {
+  const pos = getCharmPos();
+  if (currentCharm.type === 'image') {
+    const w = currentCharm.width || 78;
+    const h = w * (imgAspect || 1.23);
+    // 1. Hand anchor grip hit area
+    if (Math.hypot(px - pos.x, py - pos.y) <= 38) return true;
+    // 2. Body hit area
+    const bodyCenterY = pos.y + h * 0.44;
+    const bodyRadius = Math.max(w * 0.65, 48);
+    if (Math.hypot(px - pos.x, py - bodyCenterY) <= bodyRadius) return true;
+    return false;
+  } else {
+    const radius = Math.max(currentCharm.width || 78, 65) * 0.75;
+    return Math.hypot(px - pos.x, py - pos.y) <= radius;
+  }
+}
+
+// ---------- Right-Click Dock Positioning & Management ----------
+function openDockAt(x, y) {
+  isDockOpen = true;
+  let dockLeft = x - 220;
+  if (dockLeft < 15) dockLeft = 15;
+  if (dockLeft + 450 > window.innerWidth) dockLeft = window.innerWidth - 465;
+
+  let dockTop = y + 40;
+  if (dockTop + 120 > window.innerHeight) dockTop = y - 130;
+  if (dockTop < 10) dockTop = 10;
+
+  heroDock.style.left = `${dockLeft}px`;
+  heroDock.style.top = `${dockTop}px`;
+  heroDock.classList.add('open');
+  hideSpeechBubble();
+  syncHitBounds();
+  updateClickThrough();
+}
+
+function closeDock() {
+  isDockOpen = false;
+  heroDock.classList.remove('open');
+  syncHitBounds();
+  updateClickThrough();
+}
+
+function toggleDockAt(x, y) {
+  if (isDockOpen) closeDock();
+  else openDockAt(x, y);
+}
+
+// ---------- Hit Testing, Clickables & Mouse Events ----------
+function updateClickThrough() {
+  const overCharm = isPointOverCharm(mouse.x, mouse.y);
+
+  if (dragging) {
+    document.body.style.cursor = 'grabbing';
+  } else if (overCharm) {
+    document.body.style.cursor = 'grab';
+  } else {
+    document.body.style.cursor = 'default';
+  }
+
+  const shouldCapture = overCharm || dragging || isDockOpen || mouseOverUI;
+
+  if (shouldCapture !== mouseOverCharm) {
+    mouseOverCharm = shouldCapture;
+    if (window.deskCharm) {
+      window.deskCharm.setIgnoreMouseEvents(!shouldCapture, { forward: true });
+    }
+  }
+}
+
+// Mouse movement
+window.addEventListener('mousemove', (e) => {
+  if (prevMouse.x !== -9999) {
+    mouseVel.x = (e.clientX - prevMouse.x) * 0.4 + mouseVel.x * 0.6;
+    mouseVel.y = (e.clientY - prevMouse.y) * 0.4 + mouseVel.y * 0.6;
+  }
+  prevMouse.x = e.clientX;
+  prevMouse.y = e.clientY;
+
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+
+  if (dragging) {
+    if (Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) > 6) {
+      hasDragged = true;
+      hideSpeechBubble();
+    }
+  }
+  updateClickThrough();
+});
+
+// Left click & drag start
+window.addEventListener('mousedown', (e) => {
+  if (isDockOpen && !heroDock.contains(e.target)) {
+    closeDock();
+  }
+
+  const pos = getCharmPos();
+  const overCharm = isPointOverCharm(e.clientX, e.clientY);
+
+  if (overCharm && e.button === 0) {
+    dragging = true;
+    hasDragged = false;
+    dragStartPos.x = e.clientX;
+    dragStartPos.y = e.clientY;
+    dragOffset.x = e.clientX - pos.x;
+    dragOffset.y = e.clientY - pos.y;
+    updateClickThrough();
+  }
+});
+
+// Left click release (Click vs Drag)
+window.addEventListener('mouseup', (e) => {
+  if (dragging && e.button === 0) {
+    dragging = false;
+
+    if (!hasDragged) {
+      // CLICKED on the character! Trigger clickable speech bubble, particle burst & sound!
+      const pos = getCharmPos();
+      const burstY = currentCharm.type === 'image' ? pos.y + 35 : pos.y;
+      playSound(currentCharm.sound || currentCharm.stringStyle);
+      spawnClickBurst(pos.x, burstY, currentCharm.id);
+      showHeroQuote();
+    } else {
+      // Released after dragging: impart momentum fling
+      const lastIdx = NUM_POINTS - 1;
+      const flingX = Math.max(-25, Math.min(25, mouseVel.x * 0.85));
+      const flingY = Math.max(-25, Math.min(25, mouseVel.y * 0.85));
+      ropePoints[lastIdx].oldX = ropePoints[lastIdx].x - flingX;
+      ropePoints[lastIdx].oldY = ropePoints[lastIdx].y - flingY;
+    }
+  }
+  updateClickThrough();
+});
+
+// RIGHT-CLICK directly on character to open settings / hero switcher!
+window.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  const pos = getCharmPos();
+  const overCharm = isPointOverCharm(e.clientX, e.clientY);
+
+  if (overCharm) {
+    // Right clicked character -> toggle hero switcher dock!
+    toggleDockAt(pos.x, pos.y);
+  } else if (isDockOpen && !heroDock.contains(e.target)) {
+    closeDock();
+  }
+});
+
+// UI Event listeners
+heroDock.addEventListener('mouseenter', () => { mouseOverUI = true; updateClickThrough(); });
+heroDock.addEventListener('mouseleave', () => { mouseOverUI = false; updateClickThrough(); });
+closeDockBtn.addEventListener('click', () => closeDock());
+
+skinBtn.addEventListener('click', () => {
+  if (window.deskCharm && window.deskCharm.toggleHeroSkin) {
+    window.deskCharm.toggleHeroSkin(currentCharm.id).then(updated => {
+      if (updated) {
+        applyCharm(updated);
+        const pos = getCharmPos();
+        spawnClickBurst(pos.x, pos.y, updated.id);
+        showHeroQuote();
+        // Refresh dock list with new skins
+        if (window.deskCharm.getAllCharms) {
+          window.deskCharm.getAllCharms().then(data => {
+            allCharmsData = data;
+            renderDockHeroes();
+          });
+        }
+      }
+    });
+  } else if (currentCharm.altValue) {
+    const isAlt = currentCharm.activeSkin === 'alt';
+    currentCharm.activeSkin = isAlt ? 'default' : 'alt';
+    currentCharm.value = isAlt ? (currentCharm.originalValue || currentCharm.value) : currentCharm.altValue;
+    currentCharm.name = isAlt ? (currentCharm.originalName || currentCharm.name) : (currentCharm.altName || currentCharm.name);
+    applyCharm(currentCharm);
+    const pos = getCharmPos();
+    spawnClickBurst(pos.x, pos.y, currentCharm.id);
+    showHeroQuote();
+  }
+});
+
+soundBtn.addEventListener('click', () => {
+  if (window.deskCharm) {
+    window.deskCharm.toggleSound().then(enabled => {
+      soundEnabled = enabled;
+      soundBtn.textContent = soundEnabled ? '🔊 SFX' : '🔇 SFX';
+      soundBtn.classList.toggle('active', soundEnabled);
+    });
+  } else {
+    soundEnabled = !soundEnabled;
+    soundBtn.textContent = soundEnabled ? '🔊 SFX' : '🔇 SFX';
+    soundBtn.classList.toggle('active', soundEnabled);
+  }
+});
+
+posBtn.addEventListener('click', () => {
+  const positions = ['right', 'center', 'left'];
+  let currentPosName = anchorRatio === 0.85 ? 'right' : (anchorRatio === 0.5 ? 'center' : 'left');
+  let nextPos = positions[(positions.indexOf(currentPosName) + 1) % positions.length];
+  applyPosition(nextPos);
+  if (window.deskCharm) {
+    window.deskCharm.setAnchorPosition(nextPos);
+  }
+});
+
+function applyPosition(pos) {
+  if (pos === 'left') anchorRatio = 0.15;
+  else if (pos === 'center') anchorRatio = 0.5;
+  else anchorRatio = 0.85;
+  setAnchor();
+}
+
+// ---------- Helper: Smooth Curve Path Through Flexible Rope Points ----------
+function traceSmoothRope(pts) {
+  if (pts.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const xc = (pts[i].x + pts[i + 1].x) / 2;
+    const yc = (pts[i].y + pts[i + 1].y) / 2;
+    ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+  }
+  ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+}
+
+function pseudoRandom(i, seed) {
+  const x = Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+// ---------- Flexible String Styles Renderers ----------
+
+/* 1. Spider-Man Flexible Web String */
+function drawWeb(pts, t) {
+  ctx.save();
+  const p0 = pts[0];
+  const pLast = pts[pts.length - 1];
+
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  ctx.moveTo(p0.x - 24, p0.y);
+  ctx.lineTo(p0.x, p0.y + 18);
+  ctx.lineTo(p0.x + 24, p0.y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(p0.x, p0.y, 16, 0.2 * Math.PI, 0.8 * Math.PI);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(p0.x, p0.y);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const wave = Math.sin(t * 4 + i * 0.8) * 2;
+    const xc = (pts[i].x + pts[i + 1].x) / 2 + wave;
+    const yc = (pts[i].y + pts[i + 1].y) / 2;
+    ctx.quadraticCurveTo(pts[i].x + wave, pts[i].y, xc, yc);
+  }
+  ctx.lineTo(pLast.x, pLast.y);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.96)";
+  ctx.lineWidth = 2.6;
+  ctx.shadowColor = "rgba(255, 255, 255, 0.8)";
+  ctx.shadowBlur = 5;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+  for (let i = 2; i < pts.length - 1; i += 2) {
+    const node = pts[i];
+    const shimmer = 2 + Math.sin(t * 6 + i) * 0.8;
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, shimmer, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.beginPath();
+  ctx.arc(pLast.x, pLast.y, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* 2. Iron Man Flexible Arc Thruster Beam */
+function drawRepulsorBeam(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(255, 120, 20, 0.7)";
+  ctx.lineWidth = 8;
+  ctx.shadowColor = "rgba(255, 100, 0, 0.9)";
+  ctx.shadowBlur = 12;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(210, 250, 255, 0.96)";
+  ctx.lineWidth = 3.2;
+  ctx.shadowColor = "rgba(0, 220, 255, 1)";
+  ctx.shadowBlur = 8;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+  const ringCount = 3;
+  for (let k = 0; k < ringCount; k++) {
+    const frac = ((t * 1.5 + k / ringCount) % 1);
+    const floatIdx = frac * (pts.length - 1);
+    const idx = Math.floor(floatIdx);
+    const rem = floatIdx - idx;
+    const nextIdx = Math.min(idx + 1, pts.length - 1);
+
+    const px = pts[idx].x + (pts[nextIdx].x - pts[idx].x) * rem;
+    const py = pts[idx].y + (pts[nextIdx].y - pts[idx].y) * rem;
+    const segAngle = Math.atan2(pts[nextIdx].x - pts[idx].x, pts[nextIdx].y - pts[idx].y);
+    const pulseWidth = 7 + Math.sin(frac * Math.PI) * 5;
+
+    ctx.strokeStyle = `rgba(0, 230, 255, ${0.9 * (1 - frac * 0.5)})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(px, py, pulseWidth, 2.5, segAngle, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(pts[0].x, pts[0].y + 3, 5, 0, Math.PI * 2);
+  ctx.arc(pts[pts.length - 1].x, pts[pts.length - 1].y, 4.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* 3. Thor Flexible Lightning Arc */
+function drawLightningArc(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(170, 230, 255, 0.95)";
+  ctx.lineWidth = 2.6;
+  ctx.shadowColor = "rgba(70, 180, 255, 1)";
+  ctx.shadowBlur = 9;
+
+  const seed = Math.floor(t * 8);
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+
+  for (let i = 1; i < pts.length; i++) {
+    const p1 = pts[i - 1];
+    const p2 = pts[i];
+    const midX = (p1.x + p2.x) / 2;
+    const midY = (p1.y + p2.y) / 2;
+    const jitter = (pseudoRandom(i, seed) - 0.5) * 14;
+    ctx.lineTo(midX + jitter, midY);
+    ctx.lineTo(p2.x, p2.y);
+  }
+  ctx.stroke();
+
+  if (pseudoRandom(42, seed) > 0.4) {
+    const forkIdx = Math.min(pts.length - 3, 2 + Math.floor(pseudoRandom(18, seed) * 4));
+    const fx = pts[forkIdx].x;
+    const fy = pts[forkIdx].y;
+    ctx.lineWidth = 1.3;
+    ctx.strokeStyle = "rgba(220, 240, 255, 0.85)";
+    ctx.beginPath();
+    ctx.moveTo(fx, fy);
+    ctx.lineTo(fx + 14 * (pseudoRandom(9, seed) > 0.5 ? 1 : -1), fy + 12);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(pts[pts.length - 1].x, pts[pts.length - 1].y, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* 4. Doctor Strange Flexible Mystic Mandala */
+function drawMysticMandala(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(255, 160, 20, 0.88)";
+  ctx.lineWidth = 2.4;
+  ctx.shadowColor = "rgba(255, 120, 0, 0.9)";
+  ctx.shadowBlur = 8;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  const mandalaIndices = [Math.floor(pts.length * 0.35), Math.floor(pts.length * 0.72)];
+  mandalaIndices.forEach((nodeIdx, idx) => {
+    const node = pts[nodeIdx];
+    const rot = t * (idx % 2 === 0 ? 3 : -3);
+    const radius = 9;
+
+    ctx.save();
+    ctx.translate(node.x, node.y);
+    ctx.rotate(rot);
+    ctx.strokeStyle = "rgba(255, 215, 60, 0.95)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, -radius);
+    ctx.lineTo(radius * 0.866, radius * 0.5);
+    ctx.lineTo(-radius * 0.866, radius * 0.5);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  ctx.fillStyle = "#ffe066";
+  ctx.beginPath();
+  ctx.arc(pts[pts.length - 1].x, pts[pts.length - 1].y, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* 5. Captain America Flexible Tactical Cable */
+function drawTacticalCable(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(60, 160, 255, 0.35)";
+  ctx.lineWidth = 1;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#b0bcc8";
+  ctx.lineWidth = 3.2;
+  ctx.shadowColor = "rgba(180, 200, 220, 0.6)";
+  ctx.shadowBlur = 4;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#4a5a6a";
+  ctx.lineWidth = 1.2;
+  ctx.shadowBlur = 0;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const segAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    const nx = Math.cos(segAngle + Math.PI / 2) * 2;
+    const ny = Math.sin(segAngle + Math.PI / 2) * 2;
+    ctx.beginPath();
+    ctx.moveTo(p1.x - nx, p1.y - ny);
+    ctx.lineTo(p1.x + nx, p1.y + ny);
+    ctx.stroke();
+  }
+
+  const pLast = pts[pts.length - 1];
+  ctx.fillStyle = "#8a9ba8";
+  ctx.strokeStyle = "#3a4a58";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.roundRect(pLast.x - 3.5, pLast.y - 7, 7, 8, 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* 6. Deadpool Flexible Comic Doodle Rope */
+function drawComicDoodle(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "#ff2244";
+  ctx.lineWidth = 3.2;
+  ctx.setLineDash([7, 4]);
+  ctx.shadowColor = "rgba(255, 34, 68, 0.6)";
+  ctx.shadowBlur = 4;
+  traceSmoothRope(pts);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const heartProgress = (t * 0.4) % 1;
+  const floatIdx = heartProgress * (pts.length - 1);
+  const idx = Math.floor(floatIdx);
+  const rem = floatIdx - idx;
+  const nextIdx = Math.min(idx + 1, pts.length - 1);
+  const hx = pts[idx].x + (pts[nextIdx].x - pts[idx].x) * rem;
+  const hy = pts[idx].y + (pts[nextIdx].y - pts[idx].y) * rem;
+
+  ctx.fillStyle = "#ff3366";
+  ctx.font = "14px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("❤️", hx + Math.sin(t * 5) * 4, hy);
+
+  ctx.fillStyle = "#ffd700";
+  ctx.font = "13px sans-serif";
+  ctx.fillText("💥", pts[0].x + 8, pts[0].y + 18);
+  ctx.restore();
+}
+
+/* 7. Scarlet Witch Flexible Chaos Hex Mist */
+function drawChaosHex(pts, t) {
+  ctx.save();
+  ctx.shadowColor = "rgba(255, 0, 60, 0.95)";
+  ctx.shadowBlur = 9;
+
+  ctx.strokeStyle = "rgba(255, 40, 80, 0.85)";
+  ctx.lineWidth = 2.4;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const wave = Math.sin(i * 0.8 + t * 5) * 4;
+    ctx.lineTo(pts[i].x + wave, pts[i].y);
+  }
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(200, 0, 50, 0.75)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const wave = Math.cos(i * 0.8 + t * 5) * -4;
+    ctx.lineTo(pts[i].x + wave, pts[i].y);
+  }
+  ctx.stroke();
+
+  ctx.fillStyle = "#ff6699";
+  for (let k = 1; k <= 3; k++) {
+    const nodeIdx = (Math.floor(t * 4 + k * 4)) % pts.length;
+    const node = pts[nodeIdx];
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* 8. Black Panther Flexible Kinetic Weave */
+function drawKineticWeave(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "#8a2be2";
+  ctx.lineWidth = 2.8;
+  ctx.shadowColor = "rgba(186, 85, 255, 0.9)";
+  ctx.shadowBlur = 8;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  const pulseCount = 3;
+  for (let i = 0; i < pulseCount; i++) {
+    const frac = (t * 1.2 + i / pulseCount) % 1;
+    const floatIdx = frac * (pts.length - 1);
+    const idx = Math.floor(floatIdx);
+    const rem = floatIdx - idx;
+    const nextIdx = Math.min(idx + 1, pts.length - 1);
+    const px = pts[idx].x + (pts[nextIdx].x - pts[idx].x) * rem;
+    const py = pts[idx].y + (pts[nextIdx].y - pts[idx].y) * rem;
+    const segAngle = Math.atan2(pts[nextIdx].x - pts[idx].x, pts[nextIdx].y - pts[idx].y);
+    const pulseRad = 4 + Math.sin(frac * Math.PI) * 5;
+
+    ctx.strokeStyle = `rgba(225, 120, 255, ${0.9 * (1 - frac * 0.4)})`;
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.ellipse(px, py, pulseRad, 2.5, segAngle, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#e0d4f5";
+  ctx.beginPath();
+  ctx.arc(pts[pts.length - 1].x, pts[pts.length - 1].y, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* 9. Hulk Flexible Gamma Chain */
+function drawGammaChain(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(80, 230, 20, 0.45)";
+  ctx.lineWidth = 8;
+  ctx.shadowColor = "rgba(100, 255, 30, 0.9)";
+  ctx.shadowBlur = 10;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const segDist = Math.hypot(dx, dy);
+    const segAngle = Math.atan2(dy, dx) - Math.PI / 2;
+
+    ctx.save();
+    ctx.translate(p1.x, p1.y);
+    ctx.rotate(segAngle);
+
+    if (i % 2 === 0) {
+      ctx.strokeStyle = "#384a30";
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.ellipse(0, segDist / 2, 4.5, segDist / 2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#99ff33";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = "#283820";
+      ctx.fillRect(-2, 0, 4, segDist);
+      ctx.strokeStyle = "#99ff33";
+      ctx.strokeRect(-2, 0, 4, segDist);
+    }
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* 10. Groot Flexible Living Vine */
+function drawLivingVine(pts, t) {
+  ctx.save();
+  ctx.strokeStyle = "#7a5028";
+  ctx.lineWidth = 3;
+  ctx.shadowColor = "rgba(120, 200, 50, 0.4)";
+  ctx.shadowBlur = 4;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  const leafNodes = [3, 6, 9, 11];
+  leafNodes.forEach((nodeIdx, idx) => {
+    if (nodeIdx >= pts.length) return;
+    const node = pts[nodeIdx];
+    const pPrev = pts[nodeIdx - 1] || pts[0];
+    const segAngle = Math.atan2(node.y - pPrev.y, node.x - pPrev.x);
+    const side = idx % 2 === 0 ? 1 : -1;
+
+    ctx.save();
+    ctx.translate(node.x, node.y);
+    ctx.rotate(segAngle + side * 0.7 + Math.sin(t * 3 + idx) * 0.15);
+
+    ctx.fillStyle = "#78db24";
+    ctx.strokeStyle = "#38700a";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(side * 6, 0, 6, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  ctx.fillStyle = "#d4ff80";
+  const sporeFrac = (t * 0.25) % 1;
+  const sIdx = Math.floor(sporeFrac * (pts.length - 1));
+  const sNode = pts[sIdx];
+  ctx.beginPath();
+  ctx.arc(sNode.x + Math.sin(t * 4) * 6, sNode.y, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* Fallback styles */
+function drawThread(pts) {
+  ctx.strokeStyle = "#ffd700";
+  ctx.lineWidth = 2.5;
+  traceSmoothRope(pts);
+  ctx.stroke();
+
+  ctx.fillStyle = "#d4af37";
+  ctx.beginPath();
+  ctx.arc(pts[pts.length - 1].x, pts[pts.length - 1].y, 4, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawElastic(pts, t) {
+  ctx.strokeStyle = "#ff7fa8";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const wave = Math.sin(i * 0.9 + t * 6) * 4;
+    ctx.lineTo(pts[i].x + wave, pts[i].y);
+  }
+  ctx.stroke();
+}
+
+function drawString(style, pts, t) {
+  let points = pts;
+  if (!Array.isArray(pts)) {
+    points = ropePoints;
+  }
+
+  switch (style) {
+    case "web":
+      return drawWeb(points, t);
+    case "repulsor_beam":
+    case "thruster":
+      return drawRepulsorBeam(points, t);
+    case "lightning":
+    case "lightning_arc":
+      return drawLightningArc(points, t);
+    case "mystic_mandala":
+      return drawMysticMandala(points, t);
+    case "tactical_cable":
+      return drawTacticalCable(points, t);
+    case "comic_doodle":
+      return drawComicDoodle(points, t);
+    case "chaos_hex":
+      return drawChaosHex(points, t);
+    case "kinetic_weave":
+      return drawKineticWeave(points, t);
+    case "gamma_chain":
+      return drawGammaChain(points, t);
+    case "living_vine":
+      return drawLivingVine(points, t);
+    case "elastic":
+      return drawElastic(points, t);
+    default:
+      return drawThread(points, t);
+  }
+}
+
+// ---------- Main Render Loop ----------
+const startTime = performance.now();
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  updatePhysics();
+  syncHitBounds();
+
+  ctx.save();
+  if (screenShake > 0) {
+    ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+  }
+
+  const pos = getCharmPos();
+  const t = (performance.now() - startTime) / 1000;
+  const width = currentCharm.width || 78;
+
+  // Tilt angle derived from last flexible rope segment
+  const lastIdx = NUM_POINTS - 1;
+  const lastP = ropePoints[lastIdx];
+  const prevP = ropePoints[lastIdx - 1] || { x: lastP.x, y: lastP.y - 10 };
+  const charmAngle = Math.atan2(lastP.x - prevP.x, lastP.y - prevP.y) * 0.75;
+
+  // 1. Draw flexible signature string
+  drawString(currentCharm.stringStyle, ropePoints, t);
+
+  // 2. Draw hero character with welcoming hover feedback
+  const isHovered = mouseOverCharm && !dragging;
+  const hoverScale = isHovered ? 1.07 : 1.0;
+  const drawWidth = width * hoverScale;
+
+  if (currentCharm.type === 'image' && charmImg) {
+    const w = drawWidth;
+    const h = w * imgAspect;
+    const handOffsetY = h * (16 / 160); // Exact hand anchor position in 130x160 viewBox
+
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    ctx.rotate(charmAngle);
+    if (isHovered) {
+      ctx.shadowColor = "rgba(255, 255, 255, 0.45)";
+      ctx.shadowBlur = 10;
+    }
+    ctx.drawImage(charmImg, -w / 2, -handOffsetY, w, h);
+    ctx.restore();
+  } else {
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    ctx.rotate(charmAngle);
+    if (isHovered) {
+      ctx.shadowColor = "rgba(255, 255, 255, 0.45)";
+      ctx.shadowBlur = 10;
+    }
+    ctx.font = `${drawWidth * 0.9}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(currentCharm.type === 'emoji' ? currentCharm.value : '★', 0, 0);
+    ctx.restore();
+  }
+
+  // 3. Draw interactive click particles
+  for (let i = clickParticles.length - 1; i >= 0; i--) {
+    const p = clickParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.12; // gravity
+    p.life++;
+    p.alpha = 1 - (p.life / p.maxLife);
+
+    if (p.life >= p.maxLife) {
+      clickParticles.splice(i, 1);
+      continue;
+    }
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    if (p.symbol) {
+      ctx.font = "13px sans-serif";
+      ctx.fillText(p.symbol, p.x, p.y);
+    } else {
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  ctx.restore(); // screenShake restore
+  requestAnimationFrame(render);
+}
+render();
+
+// ---------- Hero Dock Population & Interaction ----------
+function renderDockHeroes() {
+  heroListContainer.innerHTML = '';
+  const list = allCharmsData.marvel && allCharmsData.marvel.length ? allCharmsData.marvel : [];
+
+  list.forEach(hero => {
+    const isCurrent = hero.id === currentCharm.id;
+    const isAlt = hero.activeSkin === 'alt' || (isCurrent && currentCharm.activeSkin === 'alt');
+    const item = document.createElement('div');
+    item.className = 'hero-item' + (isCurrent ? ' active' : '');
+    item.title = `${hero.name} (${hero.tagline})${isAlt ? ' [Alternate Model]' : ' [Classic Model]'}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'hero-avatar';
+
+    if (hero.type === 'image') {
+      const img = document.createElement('img');
+      img.src = normalizePath(isCurrent ? currentCharm.value : hero.value) + '?v=' + Date.now();
+      avatar.appendChild(img);
+    } else {
+      const span = document.createElement('span');
+      span.textContent = hero.value;
+      avatar.appendChild(span);
+    }
+
+    if (isAlt) {
+      const badge = document.createElement('div');
+      badge.className = 'hero-badge';
+      badge.textContent = 'ALT';
+      avatar.appendChild(badge);
+    }
+
+    const name = document.createElement('div');
+    name.className = 'hero-name';
+    name.textContent = (hero.originalName || hero.name).split(' ')[0];
+
+    item.appendChild(avatar);
+    item.appendChild(name);
+
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.deskCharm) {
+        window.deskCharm.setActiveCharm(hero.id).then(applyCharm);
+      } else {
+        applyCharm(hero);
+      }
+      closeDock();
+    });
+
+    heroListContainer.appendChild(item);
+  });
+}
+
+// ---------- Initial Setup with Electron IPC ----------
+if (window.deskCharm) {
+  window.deskCharm.getCurrentCharm().then(res => {
+    if (res && res.charm) {
+      applyCharm(res.charm);
+      if (res.settings) {
+        soundEnabled = res.settings.soundEnabled;
+        soundBtn.classList.toggle('active', soundEnabled);
+        soundBtn.textContent = soundEnabled ? '🔊 SFX' : '🔇 SFX';
+        applyPosition(res.settings.anchorPosition || 'right');
+      }
+    }
+  });
+
+  window.deskCharm.getAllCharms().then(data => {
+    allCharmsData = data;
+    renderDockHeroes();
+  });
+
+  window.deskCharm.onCharmChanged(data => {
+    if (data.charm) {
+      applyCharm(data.charm);
+      window.deskCharm.getAllCharms().then(data => {
+        allCharmsData = data;
+        renderDockHeroes();
+      });
+    }
+  });
+
+  window.deskCharm.onPositionChanged(pos => {
+    applyPosition(pos);
+  });
+
+  window.deskCharm.onSoundToggled(enabled => {
+    soundEnabled = enabled;
+    soundBtn.classList.toggle('active', soundEnabled);
+    soundBtn.textContent = soundEnabled ? '🔊 SFX' : '🔇 SFX';
+  });
+
+  if (window.deskCharm.onCursorEntered) {
+    window.deskCharm.onCursorEntered((pos) => {
+      mouse.x = pos.x;
+      mouse.y = pos.y;
+      updateClickThrough();
+    });
+  }
+
+  if (window.deskCharm.onCursorLeft) {
+    window.deskCharm.onCursorLeft(() => {
+      if (!dragging && !isDockOpen) {
+        mouse.x = -9999;
+        mouse.y = -9999;
+        updateClickThrough();
+      }
+    });
+  }
+} else {
+  applyCharm(currentCharm);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 160" width="100%" height="100%">
+  <defs>
+    <!-- Slate Grey Spec-Ops Suit -->
+    <radialGradient id="xforceSlate" cx="44%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#6e7685"/>
+      <stop offset="45%" stop-color="#454b57"/>
+      <stop offset="85%" stop-color="#2a2e36"/>
+      <stop offset="100%" stop-color="#14161a"/>
+    </radialGradient>
+
+    <linearGradient id="xforceBlack" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2d3036"/>
+      <stop offset="60%" stop-color="#16181c"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </linearGradient>
+
+    <!-- Glowing Red X-Force Eye -->
+    <radialGradient id="xforceRedEye" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="35%" stop-color="#ff3344"/>
+      <stop offset="75%" stop-color="#cc001b"/>
+      <stop offset="100%" stop-color="#66000a"/>
+    </radialGradient>
+
+    <filter id="xforceRedGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="xforce3DShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#xforce3DShadow)">
+    <!-- 1. RAISED SPEC-OPS GLOVED HAND CLUTCHING ROPE AT (cx=65, cy=16) -->
+    <!-- Slate Grey Arm extending from shoulder (x=88, y=56) up to glove (x=65, y=22) -->
+    <path d="M 88 56 L 76 30 L 66 22 L 58 26 L 68 44 L 80 62 Z" fill="url(#xforceSlate)" stroke="#14161a" stroke-width="1.3"/>
+    <!-- Carbon Black Wristband -->
+    <rect x="58" y="20" width="14" height="4.5" rx="1.5" transform="rotate(-25 65 22)" fill="url(#xforceBlack)" stroke="#000" stroke-width="0.8"/>
+
+    <!-- Slate Gloved Hand clutching tactical rope at cx=65, cy=22 -->
+    <ellipse cx="65" cy="22" rx="9" ry="6.5" fill="url(#xforceSlate)" stroke="#14161a" stroke-width="1.1"/>
+    <!-- Black carbon knuckles gripping knot -->
+    <rect x="58" y="16" width="14" height="4" rx="2" fill="url(#xforceBlack)" stroke="#000" stroke-width="0.7"/>
+
+    <!-- Tactical Rope Connection Knot (Direct at cx=65, cy=16) -->
+    <circle cx="65" cy="16" r="6" fill="#14161a" stroke="#ff2244" stroke-width="1.6"/>
+    <circle cx="65" cy="16" r="2.4" fill="#ff2244"/>
+
+    <!-- 2. CROSSED KATANAS BEHIND SHOULDERS -->
+    <rect x="18" y="32" width="7" height="30" rx="2" transform="rotate(-38 21 47)" fill="#1c1f24" stroke="#404652" stroke-width="1.2"/>
+    <rect x="100" y="32" width="7" height="30" rx="2" transform="rotate(38 103 47)" fill="#1c1f24" stroke="#404652" stroke-width="1.2"/>
+
+    <!-- 3. X-FORCE MASK (Looking up) -->
+    <path d="M 32 50 C 32 30 46 24 58 24 C 60 21 62 21 64 24 C 76 24 88 30 88 50 C 89 70 88 88 82 98 C 77 106 68 110 58 110 C 48 110 39 106 34 98 C 29 88 31 70 32 50 Z" fill="url(#xforceSlate)" stroke="#0c0e10" stroke-width="2"/>
+
+    <!-- Carbon Black Patches -->
+    <path d="M 37 52 C 41 46 54 46 58 56 C 60 66 59 80 54 88 C 48 92 41 90 35 82 C 31 72 33 58 37 52 Z" fill="url(#xforceBlack)" stroke="#090a0c" stroke-width="1.5"/>
+    <path d="M 79 52 C 75 46 62 46 58 56 C 56 66 57 80 62 88 C 68 92 75 90 81 82 C 85 72 83 58 79 52 Z" fill="url(#xforceBlack)" stroke="#090a0c" stroke-width="1.5"/>
+
+    <!-- Glowing Red X-Force Eyes -->
+    <g filter="url(#xforceRedGlow)">
+      <path d="M 40 64 Q 48 58 54 64 Q 48 74 40 64 Z" fill="url(#xforceRedEye)" stroke="#ff2244" stroke-width="0.8"/>
+      <path d="M 62 65 Q 68 62 74 65 Q 68 70 62 65 Z" fill="url(#xforceRedEye)" stroke="#ff2244" stroke-width="0.8"/>
+      <circle cx="47" cy="65" r="1.3" fill="#ffffff"/>
+      <circle cx="69" cy="66" r="1.1" fill="#ffffff"/>
+    </g>
+
+    <!-- 4. CHEST & X-FORCE BUCKLE -->
+    <path d="M 28 110 C 16 116 10 132 8 150 C 28 154 88 154 108 150 C 106 132 100 116 88 110 C 78 120 68 124 58 124 C 48 124 38 120 28 110 Z" fill="url(#xforceSlate)" stroke="#0c0e10" stroke-width="2"/>
+    <path d="M 32 110 L 84 150" stroke="#16181c" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M 84 110 L 32 150" stroke="#16181c" stroke-width="5.5" stroke-linecap="round"/>
+
+    <!-- X-Force Silver 'X' Buckle -->
+    <circle cx="58" cy="138" r="8.5" fill="#14161a" stroke="#88929e" stroke-width="2"/>
+    <polygon points="54,132 56,132 62,144 60,144" fill="#ffffff"/>
+    <polygon points="62,132 60,132 54,144 56,144" fill="#ffffff"/>
+  </g>
+</svg>

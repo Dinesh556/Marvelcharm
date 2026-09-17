@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 160" width="100%" height="100%">
+  <defs>
+    <!-- Tactical Textured Deadpool Red -->
+    <radialGradient id="dpRed" cx="42%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff3344"/>
+      <stop offset="45%" stop-color="#cc1426"/>
+      <stop offset="85%" stop-color="#8a0815"/>
+      <stop offset="100%" stop-color="#420007"/>
+    </radialGradient>
+
+    <!-- Carbon Black Leather -->
+    <linearGradient id="dpBlack" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a2d33"/>
+      <stop offset="60%" stop-color="#14161a"/>
+      <stop offset="100%" stop-color="#050608"/>
+    </linearGradient>
+
+    <!-- Katana Steel -->
+    <linearGradient id="dpSteel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#b0b8c4"/>
+      <stop offset="100%" stop-color="#5a6370"/>
+    </linearGradient>
+
+    <filter id="dp3DShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#dp3DShadow)">
+    <!-- 1. RAISED ARM & GLOVED HAND CLUTCHING DOODLE ROPE AT (cx=65, cy=16) -->
+    <!-- Red Arm extending from shoulder (x=88, y=56) up to glove (x=65, y=22) -->
+    <path d="M 88 56 L 76 30 L 66 22 L 58 26 L 68 44 L 80 62 Z" fill="url(#dpRed)" stroke="#420007" stroke-width="1.3"/>
+    <!-- Black Carbon Fiber Wristband -->
+    <rect x="58" y="20" width="14" height="4.5" rx="1.5" transform="rotate(-25 65 22)" fill="url(#dpBlack)" stroke="#000" stroke-width="0.8"/>
+
+    <!-- Red and Black Gloved Hand clutching doodle rope at cx=65, cy=22 -->
+    <ellipse cx="65" cy="22" rx="9" ry="6.5" fill="url(#dpRed)" stroke="#420007" stroke-width="1.1"/>
+    <!-- Black leather fingers wrapped around rope knot -->
+    <rect x="58" y="16" width="14" height="4" rx="2" fill="url(#dpBlack)" stroke="#000" stroke-width="0.7"/>
+
+    <!-- Comic Rope Knot Connection (Direct at cx=65, cy=16) -->
+    <circle cx="65" cy="16" r="6" fill="#ff2244" stroke="#ffdd00" stroke-width="1.8"/>
+    <circle cx="65" cy="16" r="2.4" fill="#ffffff"/>
+
+    <!-- 2. CROSSED KATANA HILTS BEHIND SHOULDERS -->
+    <rect x="18" y="32" width="7" height="30" rx="2" transform="rotate(-38 21 47)" fill="#1c1f24" stroke="#404652" stroke-width="1.2"/>
+    <rect x="22" y="28" width="5" height="4" rx="1" transform="rotate(-38 24 30)" fill="url(#dpSteel)"/>
+    <rect x="100" y="32" width="7" height="30" rx="2" transform="rotate(38 103 47)" fill="#1c1f24" stroke="#404652" stroke-width="1.2"/>
+    <rect x="98" y="28" width="5" height="4" rx="1" transform="rotate(38 100 30)" fill="url(#dpSteel)"/>
+
+    <!-- 3. DEADPOOL MASK (Tilted playfully, looking up) -->
+    <path d="M 32 50 C 32 30 46 24 58 24 C 60 21 62 21 64 24 C 76 24 88 30 88 50 C 89 70 88 88 82 98 C 77 106 68 110 58 110 C 48 110 39 106 34 98 C 29 88 31 70 32 50 Z" fill="url(#dpRed)" stroke="#420007" stroke-width="2"/>
+
+    <!-- Black Eye Patches -->
+    <path d="M 37 52 C 41 46 54 46 58 56 C 60 66 59 80 54 88 C 48 92 41 90 35 82 C 31 72 33 58 37 52 Z" fill="url(#dpBlack)" stroke="#090a0c" stroke-width="1.5"/>
+    <path d="M 79 52 C 75 46 62 46 58 56 C 56 66 57 80 62 88 C 68 92 75 90 81 82 C 85 72 83 58 79 52 Z" fill="url(#dpBlack)" stroke="#090a0c" stroke-width="1.5"/>
+
+    <!-- Expressive Comic White Eyes -->
+    <path d="M 40 64 Q 48 58 54 64 Q 48 74 40 64 Z" fill="#ffffff" stroke="#111" stroke-width="1"/>
+    <path d="M 62 65 Q 68 62 74 65 Q 68 70 62 65 Z" fill="#ffffff" stroke="#111" stroke-width="1"/>
+
+    <!-- 4. CHEST & TACTICAL HARNESS -->
+    <path d="M 28 110 C 16 116 10 132 8 150 C 28 154 88 154 108 150 C 106 132 100 116 88 110 C 78 120 68 124 58 124 C 48 124 38 120 28 110 Z" fill="url(#dpRed)" stroke="#420007" stroke-width="2"/>
+    <path d="M 32 110 L 84 150" stroke="#14161a" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M 84 110 L 32 150" stroke="#14161a" stroke-width="5.5" stroke-linecap="round"/>
+
+    <!-- Deadpool Logo Belt Buckle -->
+    <circle cx="58" cy="138" r="8.5" fill="#cc1426" stroke="#14161a" stroke-width="2"/>
+    <line x1="58" y1="130" x2="58" y2="146" stroke="#14161a" stroke-width="1.5"/>
+    <circle cx="54" cy="138" r="1.5" fill="#ffffff"/>
+    <circle cx="62" cy="138" r="1.5" fill="#ffffff"/>
+  </g>
+</svg>
